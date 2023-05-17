@@ -1,0 +1,75 @@
+version: "3.10"
+
+services:
+    web:
+        container_name: nginx
+        build: nginx
+        volumes:
+          - ./media:/usr/share/nginx/html/static/images
+        ports:
+          - 80:80
+          - 443:443
+        depends_on:
+          - api
+        logging:
+          driver: "local"
+
+    api:
+        container_name: api
+        build: .
+        env_file:
+          - ./.env
+        volumes:
+          - ./media:/code/media
+        ports:
+          - 8080:8080
+        depends_on:
+          - db_migrations
+        logging:
+          driver: "local"
+
+
+    db_migrations:
+      container_name: db_migrations
+      build: .
+      command: bash -c "cd app && alembic upgrade head"
+      env_file:
+        - ./.env
+      depends_on:
+        db:
+          condition: service_healthy
+      logging:
+        driver: "local"
+
+    db:
+      container_name: db
+      image: postgres:15.0-alpine
+      command:
+        - "postgres"
+        - "-c"
+        - "log_destination=stderr"
+        - "-c"
+        - "logging_collector=on"
+        - "-c"
+        - "log_directory=/var/lib/postgresql/data/pg_log"
+        - "-c"
+        - "work_mem=16MB"
+        - "-c"
+        - "maintenance_work_mem=512MB"
+      env_file:
+        - ./.env
+      volumes:
+        - ./postgres_db/postgres/postgresql-data:/var/lib/postgresql/data
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+      restart: unless-stopped
+
+networks:
+  local:
+    driver: bridge
+
+volumes:
+  postgres_data:
