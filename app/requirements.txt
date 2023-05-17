@@ -1,0 +1,9 @@
+FastApi==0.95.0
+SqlAlchemy==2.0.8
+Alembic==1.10.3
+asyncpg==0.27.0
+uvicorn==0.21.1
+python-multipart==0.0.6
+aiofiles==23.1.0
+python-dotenv==1.0.0
+httpx==0.24.0
