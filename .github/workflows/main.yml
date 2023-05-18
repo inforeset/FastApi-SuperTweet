@@ -1,7 +1,7 @@
 name: VseVSad
 env:
   PROJECT_NAME: "test"
-  STAGE: "main"
+  STAGE: "dev"
 on:
   push:
     branches: [ main ]
@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY_VseVSad }}
           script: |
             cd "/home/${{ secrets.USERNAME }}/deploy/${{ env.PROJECT_NAME }}"
-            git pull
+            git pull main
             git checkout ${{ env.STAGE }}
             docker-compose down --remove-orphans &&
             docker-compose up --build -d
