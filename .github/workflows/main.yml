@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY_VseVSad }}
           script: |
             cd "/home/${{ secrets.USERNAME }}/deploy/${{ env.PROJECT_NAME }}"
-            git pull main
+            git pull
             git checkout ${{ env.STAGE }}
             docker-compose down --remove-orphans &&
             docker-compose up --build -d
