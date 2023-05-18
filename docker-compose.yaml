@@ -7,7 +7,7 @@ services:
         volumes:
           - ./media:/usr/share/nginx/html/static/images
         ports:
-          - 80:80
+          - 80:800
           - 443:443
         depends_on:
           - api
@@ -22,7 +22,7 @@ services:
         volumes:
           - ./media:/code/media
         ports:
-          - 8000:8000
+          - 8000:7980
         depends_on:
           - db_migrations
         logging:
