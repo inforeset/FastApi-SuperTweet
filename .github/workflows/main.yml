@@ -1,6 +1,6 @@
 name: VseVSad
 env:
-  PROJECT_NAME: "VseVSad"
+  PROJECT_NAME: "test"
   STAGE: "main"
 on:
   push:
