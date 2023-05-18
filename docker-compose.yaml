@@ -22,7 +22,7 @@ services:
         volumes:
           - ./media:/code/media
         ports:
-          - 7990:8000
+          - 8000:8000
         depends_on:
           - db_migrations
         logging:
