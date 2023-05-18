@@ -1,7 +1,7 @@
 name: VseVSad
 env:
   PROJECT_NAME: "test"
-  STAGE: "dev"
+  STAGE: "main"
 on:
   push:
     branches: [ main ]
