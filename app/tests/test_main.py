@@ -1,5 +1,4 @@
 import os
-import shutil
 import uuid
 
 import pytest
@@ -19,19 +18,9 @@ async def test_get_me(client: AsyncClient):
         "user": {
             "id": 1,
             "username": "test1",
-            "following": [
-                {
-                    "id": 2,
-                    "username": "test2"
-                }
-            ],
-            "followers": [
-                {
-                    "id": 2,
-                    "username": "test2"
-                }
-            ]
-        }
+            "following": [{"id": 2, "username": "test2"}],
+            "followers": [{"id": 2, "username": "test2"}],
+        },
     }
     response = await client.get("users/me")
     assert response.status_code == 200
@@ -45,19 +34,9 @@ async def test_get_user(client: AsyncClient):
         "user": {
             "id": 2,
             "username": "test2",
-            "following": [
-                {
-                    "id": 1,
-                    "username": "test1"
-                }
-            ],
-            "followers": [
-                {
-                    "id": 1,
-                    "username": "test1"
-                }
-            ]
-        }
+            "following": [{"id": 1, "username": "test1"}],
+            "followers": [{"id": 1, "username": "test1"}],
+        },
     }
     response = await client.get("users/2")
     assert response.status_code == 200
@@ -69,7 +48,7 @@ async def test_get_user_with_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found user"
+        "error_message": "Not Found user",
     }
     response = await client.get("users/50")
     assert response.status_code == 404
@@ -78,9 +57,7 @@ async def test_get_user_with_bad_id(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_follow(client: AsyncClient):
-    await_response = {
-        "result": True
-    }
+    await_response = {"result": True}
     response = await client.post("users/3/follow")
     assert response.status_code == 200
     assert response.json() == await_response
@@ -101,7 +78,7 @@ async def test_follow_with_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found user"
+        "error_message": "Not Found user",
     }
     response = await client.post("users/50/follow")
     assert response.status_code == 404
@@ -110,15 +87,10 @@ async def test_follow_with_bad_id(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_delete_follow(client: AsyncClient):
-    await_response = {
-        "result": True
-    }
+    await_response = {"result": True}
     async with AsyncSession(engine) as session:
         await session.execute(
-            text(
-                "INSERT INTO user_to_user(followers_id, following_id)"
-                "VALUES(1, 3);"
-            )
+            text("INSERT INTO user_to_user(followers_id, following_id)" "VALUES(1, 3);")
         )
         await session.commit()
     response = await client.delete("users/3/follow")
@@ -141,7 +113,7 @@ async def test_delete_follow_with_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found user"
+        "error_message": "Not Found user",
     }
     response = await client.delete("users/50/follow")
     assert response.status_code == 404
@@ -156,16 +128,11 @@ async def test_get_tweets(client: AsyncClient):
             {
                 "id": 1,
                 "content": "test_tweet2",
-                "author": {
-                    "id": 2,
-                    "username": "test2"
-                },
+                "author": {"id": 2, "username": "test2"},
                 "likes": [],
-                "attachments": [
-                    "test.jpg"
-                ]
+                "attachments": ["test.jpg"],
             }
-        ]
+        ],
     }
     async with AsyncSession(engine) as session:
         await session.execute(
@@ -175,10 +142,7 @@ async def test_get_tweets(client: AsyncClient):
             )
         )
         await session.execute(
-            text(
-                "INSERT INTO medias(path_media, tweet_id)"
-                "VALUES('test.jpg', 1);"
-            )
+            text("INSERT INTO medias(path_media, tweet_id)" "VALUES('test.jpg', 1);")
         )
         await session.commit()
 
@@ -191,36 +155,23 @@ async def test_get_tweets(client: AsyncClient):
 async def test_create_tweet(client: AsyncClient):
     async with AsyncSession(engine) as session:
         await session.execute(
-            text(
-                "INSERT INTO medias(path_media, tweet_id)"
-                "VALUES('test.jpg', NULL);"
-            )
+            text("INSERT INTO medias(path_media, tweet_id)" "VALUES('test.jpg', NULL);")
         )
         await session.commit()
 
-    data = {
-        "tweet_data": "test_tweet",
-        "tweet_media_ids": [1]
-    }
+    data = {"tweet_data": "test_tweet", "tweet_media_ids": [1]}
 
-    await_response = {
-        "result": True,
-        "tweet_id": 1
-    }
+    await_response = {"result": True, "tweet_id": 1}
     response = await client.post("tweets", json=data)
     assert response.status_code == 201
     assert response.json() == await_response
     async with AsyncSession(engine) as session:
         tweet = await session.execute(
-            text(
-                "SELECT * "
-                "FROM tweets "
-                "WHERE tweets.id = 1;"
-            )
+            text("SELECT * " "FROM tweets " "WHERE tweets.id = 1;")
         )
     results_as_dict = tweet.mappings().all()
     assert len(results_as_dict) == 1
-    assert results_as_dict[0]['tweet_data'] == "test_tweet"
+    assert results_as_dict[0]["tweet_data"] == "test_tweet"
 
 
 @pytest.mark.anyio
@@ -234,9 +185,7 @@ async def test_delete_tweet(client: AsyncClient):
         )
         await session.commit()
 
-    await_response = {
-        "result": True
-    }
+    await_response = {"result": True}
 
     response = await client.delete("tweets/1")
 
@@ -244,11 +193,7 @@ async def test_delete_tweet(client: AsyncClient):
     assert response.json() == await_response
     async with AsyncSession(engine) as session:
         tweet = await session.execute(
-            text(
-                "SELECT * "
-                "FROM tweets "
-                "WHERE tweets.id = 1;"
-            )
+            text("SELECT * " "FROM tweets " "WHERE tweets.id = 1;")
         )
     results_as_dict = tweet.mappings().all()
     assert len(results_as_dict) == 0
@@ -268,7 +213,7 @@ async def test_delete_tweet_not_owner(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Forbidden",
-        "error_message": "Access forbidden"
+        "error_message": "Access forbidden",
     }
 
     response = await client.delete("tweets/1")
@@ -282,7 +227,7 @@ async def test_delete_tweet_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found tweet"
+        "error_message": "Not Found tweet",
     }
 
     response = await client.delete("tweets/50")
@@ -302,9 +247,7 @@ async def test_likes(client: AsyncClient):
         )
         await session.commit()
 
-    await_response = {
-        "result": True
-    }
+    await_response = {"result": True}
 
     response = await client.post("tweets/1/likes")
 
@@ -312,11 +255,7 @@ async def test_likes(client: AsyncClient):
     assert response.json() == await_response
     async with AsyncSession(engine) as session:
         like = await session.execute(
-            text(
-                "SELECT * "
-                "FROM likes "
-                "WHERE likes.id = 1;"
-            )
+            text("SELECT * " "FROM likes " "WHERE likes.id = 1;")
         )
     results_as_dict = like.mappings().all()
     assert len(results_as_dict) == 1
@@ -327,7 +266,7 @@ async def test_likes_with_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found tweet"
+        "error_message": "Not Found tweet",
     }
 
     response = await client.post("tweets/50/likes")
@@ -346,16 +285,11 @@ async def test_delete_like(client: AsyncClient):
             )
         )
         await session.execute(
-            text(
-                "INSERT INTO likes(user_id, tweets_id)"
-                "VALUES(1, 1);"
-            )
+            text("INSERT INTO likes(user_id, tweets_id)" "VALUES(1, 1);")
         )
         await session.commit()
 
-    await_response = {
-        "result": True
-    }
+    await_response = {"result": True}
 
     response = await client.delete("tweets/1/likes")
 
@@ -363,11 +297,7 @@ async def test_delete_like(client: AsyncClient):
     assert response.json() == await_response
     async with AsyncSession(engine) as session:
         like = await session.execute(
-            text(
-                "SELECT * "
-                "FROM likes "
-                "WHERE likes.id = 1;"
-            )
+            text("SELECT * " "FROM likes " "WHERE likes.id = 1;")
         )
     results_as_dict = like.mappings().all()
     assert len(results_as_dict) == 0
@@ -378,7 +308,7 @@ async def test_delete_like_with_bad_id(client: AsyncClient):
     await_response = {
         "result": False,
         "error_type": "Not Found",
-        "error_message": "Not Found tweet"
+        "error_message": "Not Found tweet",
     }
 
     response = await client.delete("tweets/50/likes")
@@ -389,13 +319,10 @@ async def test_delete_like_with_bad_id(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_media(tmpdir: LocalPath, client: AsyncClient):
-    await_response = {
-        "result": True,
-        "media_id": 1
-    }
+    await_response = {"result": True, "media_id": 1}
     name = f"test_{uuid.uuid4()}.jpg"
     img = tmpdir.join(name)
-    img.write('test')
+    img.write("test")
     response = await client.post("medias", files={"file": open(img, "rb")})
 
     assert response.status_code == 201
@@ -403,3 +330,29 @@ async def test_media(tmpdir: LocalPath, client: AsyncClient):
     path = os.path.join(MEDIA_ROOT, name)
     if os.path.isfile(path):
         os.remove(path)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("route", ["/users/me", "users/2", "tweets"])
+async def test_get_access(client: AsyncClient, route: str):
+    headers = {"api-key": "badkey"}
+    response = await client.get(route, headers=headers)
+    assert response.status_code == 401
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "route", ["users/3/follow", "tweets", "tweets/1/likes", "medias"]
+)
+async def test_post_access(client: AsyncClient, route: str):
+    headers = {"api-key": "badkey"}
+    response = await client.post(route, headers=headers)
+    assert response.status_code == 401
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("route", ["users/3/follow", "tweets/1", "tweets/1/likes"])
+async def test_delete_access(client: AsyncClient, route: str):
+    headers = {"api-key": "badkey"}
+    response = await client.delete(route, headers=headers)
+    assert response.status_code == 401

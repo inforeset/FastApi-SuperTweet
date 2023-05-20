@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field, root_validator
 from pydantic.utils import GetterDict
@@ -21,8 +21,8 @@ class TweetOut(BaseSchema):
 
 
 class Like(BaseModel):
-    id: int = Field(alias='user_id')
-    username: str = Field(alias='name')
+    id: int = Field(alias="user_id")
+    username: str = Field(alias="name")
 
     class Config:
         orm_mode = True
@@ -30,17 +30,15 @@ class Like(BaseModel):
 
     @root_validator(pre=True)
     def extract_username(cls, v):
-        return vars(v['user'])
+        return vars(v["user"])
 
 
 class TweetGetter(GetterDict):
-
     def get(self, key: str, default: Any = None) -> Any:
-        if key == 'attachments':
-            medias = [
+        if key == "attachments":
+            return [
                 *[x.path_media for x in self._obj.medias],
             ]
-            return medias
 
         else:
             return super(TweetGetter, self).get(key, default)

@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import List
 
-from sqlalchemy import ForeignKey, Table, Column, Integer
-from sqlalchemy.orm import mapped_column, Mapped, relationship, backref
+from sqlalchemy import Column, ForeignKey, Integer, Table
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.utils.database import Base
 
@@ -17,8 +17,12 @@ class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     username: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
-    tweets: Mapped[List["Tweet"]] = relationship(backref="user", cascade="all, delete-orphan")
-    likes: Mapped[List["Like"]] = relationship(backref="user", cascade="all, delete-orphan")
+    tweets: Mapped[List["Tweet"]] = relationship(
+        backref="user", cascade="all, delete-orphan"
+    )
+    likes: Mapped[List["Like"]] = relationship(
+        backref="user", cascade="all, delete-orphan"
+    )
     api_key: Mapped[str] = mapped_column()
     following = relationship(
         "User",
@@ -26,5 +30,5 @@ class User(Base):
         primaryjoin=id == user_to_user.c.followers_id,
         secondaryjoin=id == user_to_user.c.following_id,
         backref="followers",
-        lazy="selectin"
+        lazy="selectin",
     )
