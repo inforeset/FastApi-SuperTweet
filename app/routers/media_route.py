@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.media import Media
@@ -15,11 +15,11 @@ router = APIRouter()
 
 @router.post("/medias", response_model=MediaOut, status_code=201)
 async def create_upload_file(
-        current_user: Annotated[User, Depends(get_current_user)],
-        file: UploadFile | None = None,
-        session: AsyncSession = Depends(get_session),
-
+    current_user: Annotated[User, Depends(get_current_user)],
+    file: UploadFile | None = None,
+    session: AsyncSession = Depends(get_session),
 ):
+    """Загрузка файла"""
     if not file:
         return {"message": "No upload file sent"}
     new_filename = await write_file(file)

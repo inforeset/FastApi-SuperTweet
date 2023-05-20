@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseSettings, Field
 
-MEDIA_ROOT = './media'
+MEDIA_ROOT = "./media"
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 RESPONSE_401 = {
@@ -12,9 +12,11 @@ RESPONSE_401 = {
         "description": "Unauthorized",
         "content": {
             "application/json": {
-                "example": {'result': False,
-                            'error_type': 'Unauthorized',
-                            'error_message': 'Not authenticated'}
+                "example": {
+                    "result": False,
+                    "error_type": "Unauthorized",
+                    "error_message": "Not authenticated",
+                }
             }
         },
     }
@@ -26,9 +28,11 @@ RESPONSE_401_422 = {
         "description": "Validation error",
         "content": {
             "application/json": {
-                "example": {'result': False,
-                            'error_type': 'validation error',
-                            'error_message': 'validation error message'}
+                "example": {
+                    "result": False,
+                    "error_type": "validation error",
+                    "error_message": "validation error message",
+                }
             }
         },
     },
@@ -40,9 +44,11 @@ RESPONSE_401_422_404 = {
         "description": "Not found",
         "content": {
             "application/json": {
-                "example": {'result': False,
-                            'error_type': 'not found',
-                            'error_message': 'not found element'}
+                "example": {
+                    "result": False,
+                    "error_type": "not found",
+                    "error_message": "not found element",
+                }
             }
         },
     },
@@ -54,9 +60,11 @@ RESPONSE_401_422_404_403 = {
         "description": "Access forbidden",
         "content": {
             "application/json": {
-                "example": {'result': False,
-                            'error_type': 'Access error',
-                            'error_message': 'Access forbidden'}
+                "example": {
+                    "result": False,
+                    "error_type": "Access error",
+                    "error_message": "Access forbidden",
+                }
             }
         },
     },
@@ -68,9 +76,11 @@ RESPONSE_401_422_404_400 = {
         "description": "Bad request",
         "content": {
             "application/json": {
-                "example": {'result': False,
-                            'error_type': 'Bad request',
-                            'error_message': "Can't follow yourself"}
+                "example": {
+                    "result": False,
+                    "error_type": "Bad request",
+                    "error_message": "Can't follow yourself",
+                }
             }
         },
     },
@@ -88,11 +98,10 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = ""
         case_sentive = False
-        env_file = os.path.join(BASE_DIR, '.env')
-        env_file_encoding = 'utf-8'
+        env_file = os.path.join(BASE_DIR, ".env")
+        env_file_encoding = "utf-8"
 
 
 @lru_cache()
 def get_settings():
     return Settings()
-

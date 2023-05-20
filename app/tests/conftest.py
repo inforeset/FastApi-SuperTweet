@@ -1,9 +1,10 @@
 from typing import AsyncGenerator
+
 import pytest
+from alembic import command
+from alembic.config import Config
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from alembic.config import Config
-from alembic import command
 
 from app.main import app
 from app.utils.database import get_session
@@ -11,9 +12,11 @@ from app.utils.settings import get_settings
 
 settings = get_settings()
 
-SQLALCHEMY_DATABASE_URL = (f"postgresql+asyncpg://"
-                           f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
-                           f":{settings.db_port}/{settings.db_test_name}")
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+asyncpg://"
+    f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
+    f":{settings.db_port}/{settings.db_test_name}"
+)
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=False)
 
@@ -31,8 +34,10 @@ app.dependency_overrides[get_session] = override_get_db
 
 @pytest.fixture
 def client():
-    headers = {'api-key': 'test'}
-    client = AsyncClient(app=app, base_url="http://127.0.0.1:8080/api/", headers=headers)
+    headers = {"api-key": "test"}
+    client = AsyncClient(
+        app=app, base_url="http://127.0.0.1:8080/api/", headers=headers
+    )
     yield client
 
 

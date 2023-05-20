@@ -9,8 +9,11 @@ from app.utils.utils import get_user_by_api_key
 api_key_header = APIKeyHeader(name="api-key")
 
 
-async def get_current_user(api_key_header: str = Security(api_key_header),
-                           session: AsyncSession = Depends(get_session)):
+async def get_current_user(
+    api_key_header: str = Security(api_key_header),
+    session: AsyncSession = Depends(get_session),
+):
+    """Возвращает пользователя из базы данных по API ключу."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

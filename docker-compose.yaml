@@ -7,7 +7,7 @@ services:
         volumes:
           - ./media:/usr/share/nginx/html/static/images
         ports:
-          - 7980:80
+          - 80:80
           - 443:443
         depends_on:
           - api
@@ -62,9 +62,9 @@ services:
         - ./postgres_db/postgres/postgresql-data:/var/lib/postgresql/data
       healthcheck:
         test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-        interval: 5s
+        interval: 15s
         timeout: 5s
-        retries: 5
+        retries: 10
       restart: unless-stopped
 
 networks:

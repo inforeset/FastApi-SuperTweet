@@ -1,11 +1,10 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import pool, engine_from_config
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config, AsyncEngine
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,24 +15,27 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+from app.model.likes import Like
+from app.model.media import Media
+from app.model.tweets import Tweet
+from app.model.users import User
+from app.utils.database import Base
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.utils.settings import get_settings
-from app.utils.database import Base
-from app.model.likes import Like
-from app.model.media import Media
-from app.model.tweets import Tweet
-from app.model.users import User
 
 target_metadata = Base.metadata
 settings = get_settings()
 config.set_main_option(
-    'sqlalchemy.url',
-    (f"postgresql+asyncpg://"
-     f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
-     f":{settings.db_port}/{settings.db_name}")
+    "sqlalchemy.url",
+    (
+        f"postgresql+asyncpg://"
+        f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
+        f":{settings.db_port}/{settings.db_name}"
+    ),
 )
 
 # other values from the config, defined by the needs of env.py,
@@ -96,7 +98,7 @@ def run_migrations_online() -> None:
                 context.config.get_section(context.config.config_ini_section),
                 prefix="sqlalchemy.",
                 poolclass=pool.NullPool,
-                future=True
+                future=True,
             )
         )
 

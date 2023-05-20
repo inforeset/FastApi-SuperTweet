@@ -7,9 +7,11 @@ from app.utils.settings import get_settings
 
 settings = get_settings()
 
-DATABASE_URL = (f"postgresql+asyncpg://"
-                f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
-                f":{settings.db_port}/{settings.db_name}")
+DATABASE_URL = (
+    f"postgresql+asyncpg://"
+    f"{settings.db_user}:{settings.db_password}@{settings.db_host}"
+    f":{settings.db_port}/{settings.db_name}"
+)
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 
